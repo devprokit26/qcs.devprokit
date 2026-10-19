@@ -1,0 +1,643 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #F6F7FB;
+  --surface: #FFFFFF;
+  --surface-2: #F8F9FD;
+  --ink: #101426;
+  --muted: #64748B;
+  --muted-2: #94A3B8;
+  --line: #E2E8F0;
+  --line-light: #EEF2F6;
+
+  /* QCS charcoal, red and cyan identity */
+  --brand-charcoal: #292929;
+  --brand-charcoal-dark: #171717;
+  --brand-red: #F21624;
+  --brand-red-dark: #C81320;
+  --brand-cyan: #00A6BD;
+  --brand-cyan-dark: #008A9D;
+
+  --primary: #F21624;
+  --primary-dark: #C81320;
+  --primary-light: #FFF1F2;
+  --primary-soft: #FFE4E6;
+
+  /* Semantic Accents */
+  --teal: #14B8A6;
+  --teal-light: #E6FFFA;
+  --amber: #F59E0B;
+  --amber-light: #FEF3C7;
+  --red: #EF4444;
+  --red-light: #FEE2E2;
+  --blue: #3B82F6;
+  --blue-light: #DBEAFE;
+  --green: #10B981;
+  --green-light: #D1FAE5;
+
+  --radius: 18px;
+  --radius-sm: 12px;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  overflow-x: hidden; /* the page itself must never scroll sideways; wide tables scroll inside their own box */
+  font-family: 'Manrope', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.mono {
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Responsive safety net --------------------------------------------------
+   Grid children refuse to shrink below their content by default, which is what
+   made cards burst out of the screen on small devices. */
+.grid > * {
+  min-width: 0;
+}
+img,
+video,
+canvas {
+  max-width: 100%;
+}
+/* Icons must never be squeezed by a crowded flex row or by max-width:100%
+   (that is what made modal icons shrink to almost nothing on small screens). */
+svg.lucide {
+  flex-shrink: 0;
+  max-width: none;
+}
+svg:not(.lucide) {
+  max-width: 100%;
+}
+/* Small screens: keep every icon inside a modal comfortably visible and give
+   icon-only buttons a finger-sized tap target. */
+@media (max-width: 639px) {
+  .app-modal svg.lucide {
+    min-width: 16px;
+    min-height: 16px;
+  }
+  .app-modal button:has(> svg.lucide:only-child) {
+    min-width: 36px;
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+input,
+select,
+textarea {
+  max-width: 100%;
+}
+/* Phones: 16px fields stop iOS Safari from zooming the whole page when a field is tapped */
+@media (max-width: 639px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Slide-in for the mobile menu drawer (used by AppShell) */
+@keyframes slideRight { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+.animate-slideRight { animation: slideRight 0.2s ease-out; }
+
+/* Modal fade-in (referenced by components) */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.animate-fadeIn { animation: fadeIn 0.15s ease-out; }
+
+/* ─── Print layout helpers (screen) ───────────────────────────────────────── */
+.print-layout { border-collapse: collapse; width: 100%; table-layout: fixed; }  /* wide inner tables scroll instead of stretching the document */
+.print-layout > thead > tr > td,
+.print-layout > tfoot > tr > td,
+.print-layout > tbody > tr > td.print-layout-cell { padding: 0; border: 0; }
+.print-spacer-top,
+.print-spacer-bottom { height: 0; }
+
+.shipment-invoice {
+  margin-top: 1rem;
+  color: #111827;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 11px;
+}
+.shipment-invoice table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.shipment-invoice th,
+.shipment-invoice td {
+  border: 1px solid #111827;
+  padding: 5px 7px;
+  vertical-align: middle;
+}
+.shipment-invoice th {
+  background: #d6d6d6;
+  color: #111827;
+  font-size: 10px;
+  font-weight: 800;
+  text-align: center;
+  text-transform: uppercase;
+}
+.shipment-invoice td {
+  font-size: 10px;
+}
+.shipment-invoice .invoice-title {
+  font-size: 27px;
+  letter-spacing: 0.04em;
+}
+.shipment-invoice .customer-block span {
+  display: block;
+}
+.shipment-invoice .consignee-block {
+  vertical-align: top;
+}
+.shipment-invoice .shipment-route-grid,
+.shipment-invoice .shipment-job-grid {
+  margin-top: -1px;
+}
+.shipment-invoice .shipment-route-grid td,
+.shipment-invoice .shipment-job-grid td {
+  text-align: center;
+}
+.shipment-invoice .shipment-items,
+.shipment-invoice-items {
+  margin-top: 0.5rem;
+}
+.shipment-invoice-items th {
+  background: #fff;
+  border-width: 0 0 1px;
+  color: #374151;
+}
+.shipment-invoice-items td {
+  border-width: 0 0 1px;
+  padding: 12px 8px;
+}
+.shipment-invoice-items td:not(:first-child) {
+  font-family: 'IBM Plex Mono', monospace;
+  text-align: right;
+  white-space: nowrap;
+}
+.shipment-invoice-summary {
+  display: flex;
+  justify-content: flex-end;
+  gap: 2.5rem;
+  padding: 1.25rem 0.75rem;
+  background: #fafafa;
+}
+.shipment-invoice-summary div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.shipment-invoice-summary div:last-child {
+  text-align: right;
+}
+.shipment-invoice-summary span {
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+}
+.shipment-invoice-summary strong {
+  color: #1f2937;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.ledger-statement {
+  color: #111827;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10px;
+}
+.ledger-statement-header {
+  padding: 1rem 1rem 0.65rem;
+  color: #8b91a8;
+  line-height: 1.45;
+}
+.ledger-statement-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
+  min-height: 83px;
+}
+.ledger-company-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-width: 0;
+}
+.ledger-statement-logo {
+  width: 64px;
+  height: 58px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.ledger-statement-company {
+  color: #586174;
+  font-size: 9px;
+  line-height: 1.5;
+}
+.ledger-statement-company .ledger-company-name {
+  color: #1f2937;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+.ledger-statement-company .ledger-company-network {
+  color: #008A9D;
+  font-weight: 700;
+}
+.ledger-statement-company .ledger-company-detail {
+  color: #586174;
+}
+.ledger-document-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.18rem;
+  min-width: 250px;
+  color: #64748b;
+  font-size: 9px;
+  text-align: right;
+}
+.ledger-document-meta strong {
+  color: #1f2937;
+  font-size: 12px;
+}
+.ledger-document-meta .ledger-document-title {
+  margin-bottom: 0.25rem;
+  color: #008A9D;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+.ledger-statement-account-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-top: 1px solid #cbd5e1;
+  padding-top: 0.65rem;
+  font-size: 9px;
+  color: #64748b;
+}
+.ledger-statement-account-row strong {
+  color: #1f2937;
+}
+.ledger-account-separator {
+  margin: 0 0.45rem;
+  color: #94a3b8;
+}
+.ledger-account-name {
+  color: #008A9D !important;
+}
+.ledger-statement-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+.ledger-statement-table {
+  width: 100%;
+  min-width: 1100px;
+  border-collapse: collapse;
+  table-layout: fixed;
+  border-top: 2px solid #111827;
+  font-size: 9px;
+}
+.ledger-statement-table th,
+.ledger-statement-table td {
+  padding: 4px 5px;
+  border: 1px solid #111827;
+  vertical-align: middle;
+}
+.ledger-statement-table th {
+  background: #d6d6d6;
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1.25;
+  text-align: center;
+  text-transform: uppercase;
+}
+.ledger-statement-table th small {
+  font-size: 8px;
+}
+.ledger-statement-table td {
+  color: #111827;
+  white-space: nowrap;
+}
+.ledger-statement-table td:nth-child(6) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ledger-statement-table td.number {
+  font-family: 'IBM Plex Mono', monospace;
+  text-align: right;
+}
+.ledger-statement-table td.center {
+  text-align: center;
+}
+.ledger-statement-table .opening-row,
+.ledger-statement-table .total-row {
+  background: #ededed;
+  font-weight: 800;
+}
+.ledger-statement-table .empty-row {
+  padding: 1rem;
+  color: #64748b;
+  text-align: center;
+}
+
+/* ─── Print Stylesheets ──────────────────────────────────────────────────────
+   Every printable document is wrapped in <PrintDocument> (#print-section).
+   The modal is rendered straight into <body>, so for printing we hide the
+   whole app (#root) and every other modal, then "un-clip" the modal that
+   contains #print-section so the full content flows onto the page.
+
+   - @page margin 0  → the browser has no room for its own header/footer, so
+     the page URL ("link"), date and title are NOT printed.
+   - Page margins are rebuilt with the repeating spacer thead/tfoot rows.
+   - The DevProKit footer is position:fixed at bottom:0 INSIDE
+     the page box, so it shows on every page and never creates an extra page. */
+@media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .shipment-invoice {
+    font-size: 9pt !important;
+  }
+  .shipment-invoice th,
+  .shipment-invoice td {
+    padding: 4pt 5pt !important;
+  }
+  .shipment-invoice .invoice-title {
+    font-size: 22pt !important;
+  }
+  .shipment-invoice-summary {
+    break-inside: avoid;
+  }
+  .ledger-statement {
+    font-size: 8pt !important;
+  }
+  .ledger-statement-header {
+    padding: 8pt 8pt 5pt !important;
+  }
+  .ledger-statement-top {
+    min-height: 64pt !important;
+    gap: 18pt !important;
+  }
+  .ledger-statement-logo {
+    width: 50pt !important;
+    height: 44pt !important;
+  }
+  .ledger-statement-company {
+    font-size: 7pt !important;
+  }
+  .ledger-company-brand {
+    gap: 8pt !important;
+  }
+  .ledger-statement-company .ledger-company-name {
+    font-size: 11pt !important;
+  }
+  .ledger-document-meta {
+    min-width: 185pt !important;
+    gap: 1pt !important;
+    font-size: 7pt !important;
+  }
+  .ledger-document-meta strong {
+    font-size: 9pt !important;
+  }
+  .ledger-document-meta .ledger-document-title {
+    font-size: 8pt !important;
+  }
+  .ledger-statement-account-row {
+    padding-top: 5pt !important;
+    font-size: 7pt !important;
+  }
+  .ledger-statement-table-wrap {
+    overflow: visible !important;
+  }
+  .ledger-statement-table {
+    min-width: 0 !important;
+    width: 100% !important;
+    font-size: 6.5pt !important;
+  }
+  .ledger-statement-table th,
+  .ledger-statement-table td {
+    padding: 3pt 3pt !important;
+  }
+
+  /* Hide the application and any modal that is not being printed */
+  body:has(#print-section) > #root,
+  body:has(#print-section) > [data-rht-toaster],
+  .app-modal:not(:has(#print-section)) {
+    display: none !important;
+  }
+
+  /* Un-clip the modal holding the printable section */
+  .app-modal,
+  .app-modal-wrapper,
+  .app-modal-panel,
+  .app-modal-body {
+    position: static !important;
+    display: block !important;
+    inset: auto !important;
+    width: 100% !important;
+    max-width: none !important;
+    height: auto !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  #print-section {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+    font-size: 9pt;
+  }
+
+  /* The commercial invoice has its own layout (it is not wrapped in PrintDocument). */
+  #print-section.proforma-invoice {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 10mm 12mm 0 !important;
+    font-size: 9pt !important;
+  }
+  #print-section.proforma-invoice > table {
+    width: 100% !important;
+    table-layout: fixed !important;
+  }
+  #print-section.proforma-invoice > table:first-of-type th:nth-child(1),
+  #print-section.proforma-invoice > table:first-of-type td:nth-child(1) { width: 40% !important; }
+  #print-section.proforma-invoice > table:first-of-type th:nth-child(2),
+  #print-section.proforma-invoice > table:first-of-type td:nth-child(2) { width: 15% !important; }
+  #print-section.proforma-invoice > table:first-of-type th:nth-child(3),
+  #print-section.proforma-invoice > table:first-of-type td:nth-child(3) { width: 15% !important; }
+  #print-section.proforma-invoice > table:first-of-type th:nth-child(4),
+  #print-section.proforma-invoice > table:first-of-type td:nth-child(4) { width: 10% !important; }
+  #print-section.proforma-invoice > table:first-of-type th:nth-child(5),
+  #print-section.proforma-invoice > table:first-of-type td:nth-child(5) { width: 20% !important; }
+  #print-section.proforma-invoice th,
+  #print-section.proforma-invoice td {
+    overflow-wrap: anywhere !important;
+    padding: 4pt 5pt !important;
+  }
+  #print-section.proforma-invoice header {
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 12pt !important;
+  }
+  #print-section.proforma-invoice .print-footer {
+    left: 12mm !important;
+    right: 12mm !important;
+  }
+
+  /* Page frame: spacer rows repeat on every page = top / bottom margins */
+  #print-section table.print-layout { width: 100% !important; font-size: inherit !important; }
+  #print-section .print-spacer-head { display: table-header-group !important; }
+  #print-section .print-spacer-foot { display: table-footer-group !important; }
+  #print-section .print-spacer-top { height: 10mm; }
+  #print-section .print-spacer-bottom { height: 14mm; }  /* room for the fixed footer */
+  #print-section table.print-layout > tbody > tr,
+  #print-section table.print-layout > thead > tr,
+  #print-section table.print-layout > tfoot > tr {
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+  }
+  #print-section table.print-layout > tbody > tr > td.print-layout-cell,
+  #print-section table.print-layout > thead > tr > td,
+  #print-section table.print-layout > tfoot > tr > td {
+    padding: 0 12mm !important;
+    border: 0 !important;
+    white-space: normal !important;
+    word-break: normal !important;
+  }
+
+  /* Footer pinned to the bottom of every printed page */
+  #print-section .print-footer {
+    position: fixed !important;
+    left: 12mm !important;
+    right: 12mm !important;
+    bottom: 4mm;
+    width: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    text-align: left !important;
+    font-size: 7pt !important;
+    line-height: 1.35;
+    letter-spacing: 0.04em;
+    color: #64748b !important;
+    background: transparent !important;
+  }
+  #print-section .print-footer .print-footer-row {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    white-space: nowrap !important;
+  }
+  #print-section .print-footer .print-footer-title {
+    text-align: center !important;
+  }
+
+  /* Keep the header on one row in print (mobile breakpoints don't apply to paper) */
+  #print-section .print-doc-header {
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+  #print-section .print-doc-meta { text-align: right !important; }
+  #print-section .print-keep { page-break-inside: avoid; break-inside: avoid; }
+  #print-section .grid.sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+
+  /* Content tables */
+  #print-section .overflow-x-auto,
+  #print-section .overflow-hidden {
+    overflow: visible !important;
+  }
+  #print-section .print-layout-cell table {
+    width: 100% !important;
+    table-layout: auto !important;
+    font-size: 8.5pt !important;
+    page-break-inside: auto;
+  }
+  #print-section .print-layout-cell thead {
+    display: table-header-group; /* repeat header row on every page */
+  }
+  #print-section .print-layout-cell tr {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  #print-section .print-layout-cell th,
+  #print-section .print-layout-cell td {
+    white-space: normal !important;
+    word-break: break-word;
+    min-width: 0 !important;
+    padding: 4px 5px !important;
+  }
+  /* keep dates, voucher numbers and amounts on one line */
+  #print-section .print-layout-cell td.mono,
+  #print-section .print-layout-cell th.text-right {
+    white-space: nowrap !important;
+  }
+}
